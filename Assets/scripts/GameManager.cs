@@ -1,5 +1,5 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // Controls the whole game - spawning, score, lives, game over
@@ -37,6 +37,10 @@ public class GameManager : MonoBehaviour
     [Tooltip("Number of lives at game start")]
     private int startingLives = 3;
 
+    [SerializeField]
+    [Tooltip("Game time in seconds")]
+    private float gameTime = 60f;
+
     [Header("UI References")]
     [SerializeField]
     [Tooltip("Text element for displaying score")]
@@ -47,19 +51,28 @@ public class GameManager : MonoBehaviour
     private TextMeshProUGUI livesText;
 
     [SerializeField]
+    [Tooltip("Text element for displaying timer")]
+    private TextMeshProUGUI timerText;
+
+    [SerializeField]
     [Tooltip("Panel to show when game ends")]
     private GameObject gameOverPanel;
+
+    [SerializeField]
+    [Tooltip("Text to show final score")]
+    private TextMeshProUGUI finalScoreText;
 
     // Game state variables
     private int currentScore = 0;
     private int currentLives;
     private float spawnTimer = 0f;
+    private float currentTime;
     private bool isGameOver = false;
 
-    // Runs at game start
     void Start()
     {
         currentLives = startingLives;
+        currentTime = gameTime;
 
         if (gameOverPanel != null)
         {
@@ -69,11 +82,23 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
-    // Runs every frame
+
     void Update()
     {
         if (isGameOver) return;
 
+        // Update timer
+        currentTime -= Time.deltaTime;
+
+        // Check if time is up
+        if (currentTime <= 0)
+        {
+            currentTime = 0;
+            GameOver();
+            return;
+        }
+
+        // Update spawn timer
         spawnTimer += Time.deltaTime;
 
         if (spawnTimer >= spawnRate)
@@ -81,10 +106,12 @@ public class GameManager : MonoBehaviour
             SpawnObject();
             spawnTimer = 0f;
         }
+
+        UpdateUI();
     }
 
     /// <summary>
-    /// 
+    /// Spawns a game object at a random horizontal position within a specified range.
     /// </summary>
     private void SpawnObject()
     {
@@ -122,7 +149,10 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
-    // Removes lives
+    /// <summary>
+    /// Removes lives
+    /// </summary>
+    /// <param name="damage"></param>
     public void TakeDamage(int damage)
     {
         currentLives -= damage;
@@ -135,7 +165,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the user interface elements to reflect the current score and lives.
+    /// Updates the UI elements with current score, lives, and time
     /// </summary>
     private void UpdateUI()
     {
@@ -148,10 +178,15 @@ public class GameManager : MonoBehaviour
         {
             livesText.text = "Lives: " + currentLives;
         }
+
+        if (timerText != null)
+        {
+            timerText.text = "Time: " + Mathf.Ceil(currentTime);
+        }
     }
 
     /// <summary>
-    /// Ends the current game session and displays the game over panel.
+    /// Shows game over panel with final score
     /// </summary>
     private void GameOver()
     {
@@ -161,10 +196,16 @@ public class GameManager : MonoBehaviour
         {
             gameOverPanel.SetActive(true);
         }
+
+        // Show final score
+        if (finalScoreText != null)
+        {
+            finalScoreText.text = "Final Score: " + currentScore;
+        }
     }
 
     /// <summary>
-    /// Restarts the current game by reloading the active scene.
+    /// Restarts the game - connect to button
     /// </summary>
     public void RestartGame()
     {
