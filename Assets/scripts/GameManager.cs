@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -43,11 +43,11 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField]
     [Tooltip("Text element for displaying score")]
-    private Text scoreText;
+    private TextMeshProUGUI scoreText;
     
     [SerializeField]
     [Tooltip("Text element for displaying remaining lives")]
-    private Text livesText;
+    private TextMeshProUGUI livesText;
     
     [SerializeField]
     [Tooltip("Panel to show when game ends")]
