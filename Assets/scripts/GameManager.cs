@@ -2,89 +2,80 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 
+// Controls the whole game - spawning, score, lives, game over
 public class GameManager : MonoBehaviour
 {
-    // Prefabs for spawning - assign in inspector
     [Header("Prefabs")]
     [SerializeField]
     [Tooltip("Prefab for good items that increase score")]
     private GameObject goodItemPrefab;
-    
+
     [SerializeField]
     [Tooltip("Prefab for bad items that reduce lives")]
     private GameObject badItemPrefab;
 
-    // Spawn settings - adjustable in inspector
     [Header("Spawn Settings")]
     [SerializeField]
     [Tooltip("How often objects spawn (in seconds)")]
     private float spawnRate = 1.5f;
-    
+
     [SerializeField]
     [Tooltip("Horizontal range for spawn positions")]
     private float spawnRangeX = 7f;
-    
+
     [SerializeField]
     [Tooltip("Height where objects spawn")]
     private float spawnHeight = 6f;
-    
+
     [SerializeField]
     [Range(0f, 1f)]
     [Tooltip("Probability of spawning bad items (0-1)")]
     private float badItemChance = 0.3f;
 
-    // Game settings - adjustable in inspector
     [Header("Game Settings")]
     [SerializeField]
     [Tooltip("Number of lives at game start")]
     private int startingLives = 3;
 
-    // UI References - assign in inspector
     [Header("UI References")]
     [SerializeField]
     [Tooltip("Text element for displaying score")]
     private TextMeshProUGUI scoreText;
-    
+
     [SerializeField]
     [Tooltip("Text element for displaying remaining lives")]
     private TextMeshProUGUI livesText;
-    
+
     [SerializeField]
     [Tooltip("Panel to show when game ends")]
     private GameObject gameOverPanel;
 
-    // Private variables to track game state
+    // Game state variables
     private int currentScore = 0;
     private int currentLives;
     private float spawnTimer = 0f;
     private bool isGameOver = false;
 
-    
+    // Runs at game start
     void Start()
     {
-        // Set starting lives
         currentLives = startingLives;
 
-        // Hide game over panel
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
         }
 
-        // Update UI
         UpdateUI();
     }
 
-    
+    // Runs every frame
     void Update()
     {
-        // Don't spawn if game is over
         if (isGameOver) return;
 
-        // Update spawn timer
         spawnTimer += Time.deltaTime;
 
-        // Spawn a new object when timer reaches spawn rate
         if (spawnTimer >= spawnRate)
         {
             SpawnObject();
@@ -93,15 +84,14 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawns a random falling object at the top of the screen.
+    /// 
     /// </summary>
     private void SpawnObject()
     {
-        // Calculate random spawn position
         float randomX = Random.Range(-spawnRangeX, spawnRangeX);
         Vector3 spawnPosition = new Vector3(randomX, spawnHeight, 0f);
 
-        // Decide if spawning good or bad item based on chance
+        // Pick good or bad item
         GameObject prefabToSpawn;
         if (Random.value < badItemChance)
         {
@@ -112,10 +102,9 @@ public class GameManager : MonoBehaviour
             prefabToSpawn = goodItemPrefab;
         }
 
-        // Spawn the object
+        // Create object and initialize it
         GameObject spawnedObject = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
 
-        // Initialize the falling object with reference to this manager
         FallingObject fallingObject = spawnedObject.GetComponent<FallingObject>();
         if (fallingObject != null)
         {
@@ -124,25 +113,21 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds points to the current score.
-    /// Called by GoodItem when caught.
+    /// Adds the specified number of points to the current score.
     /// </summary>
+    /// <param name="points">The number of points to add to the current score. Must be a non-negative integer.</param>
     public void AddScore(int points)
     {
         currentScore += points;
         UpdateUI();
     }
 
-    /// <summary>
-    /// Reduces player lives.
-    /// Called by BadItem when caught.
-    /// </summary>
+    // Removes lives
     public void TakeDamage(int damage)
     {
         currentLives -= damage;
         UpdateUI();
 
-        // Check for game over
         if (currentLives <= 0)
         {
             GameOver();
@@ -150,17 +135,15 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the UI text elements.
+    /// Updates the user interface elements to reflect the current score and lives.
     /// </summary>
     private void UpdateUI()
     {
-        // Update score text
         if (scoreText != null)
         {
             scoreText.text = "Score: " + currentScore;
         }
 
-        // Update lives text
         if (livesText != null)
         {
             livesText.text = "Lives: " + currentLives;
@@ -168,13 +151,12 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles game over state.
+    /// Ends the current game session and displays the game over panel.
     /// </summary>
     private void GameOver()
     {
         isGameOver = true;
 
-        // Show game over panel
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
@@ -182,11 +164,10 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Restarts the game.
-    /// Called by restart button.
+    /// Restarts the current game by reloading the active scene.
     /// </summary>
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("MiniGame");
     }
 }
