@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     [Tooltip("Game time in seconds")]
-    private float gameTime = 60f;
+    private float gameTime = 120f;
 
     [Header("UI References")]
     [SerializeField]
