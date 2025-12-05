@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Controls the whole game - spawning, score, lives, game over
+
 public class GameManager : MonoBehaviour
 {
     [Header("Prefabs")]

@@ -53,5 +53,6 @@ public class PlayerCon : MonoBehaviour
         {
             fallingObject.OnCaught();
         }
+
     }
 }
