@@ -211,4 +211,10 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("MiniGame");
     }
+
+    public bool IsGameOver()
+    {
+        return isGameOver;
+    }
+
 }

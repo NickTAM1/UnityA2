@@ -2,29 +2,35 @@ using UnityEngine;
 
 public class PlayerCon : MonoBehaviour
 {
-
-    // Player movement speed - adjustable in inspector
     [Header("Movement Settings")]
-    [SerializeField] 
+    [SerializeField]
     [Tooltip("How fast the player moves left and right")]
     private float moveSpeed = 10f;
 
-    // Boundary limits for player movement
     [Header("Boundary Settings")]
     [SerializeField]
     [Tooltip("Left boundary limit")]
     private float minX = -8f;
-    
+
     [SerializeField]
     [Tooltip("Right boundary limit")]
     private float maxX = 8f;
 
-    /// <summary>
-    /// Update is called once per frame.
-    /// Handles player input and movement.
-    /// </summary>
-    void Update()
+    private GameManager gameManager;
+
+    private void Start()
     {
+        gameManager = FindFirstObjectByType<GameManager>();
+    }
+
+    private void Update()
+    {
+        // Stop moving if game is over
+        if (gameManager != null && gameManager.IsGameOver())
+        {
+            return;
+        }
+
         // Get horizontal input (A/D keys or Left/Right arrows)
         float horizontalInput = Input.GetAxis("Horizontal");
 
@@ -40,19 +46,16 @@ public class PlayerCon : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when another collider enters this trigger (3D version).
-    /// Detects catching falling objects.
+    /// Called when another collider enters this trigger
     /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
-        // Check if the collided object is a falling object
         FallingObject fallingObject = other.GetComponent<FallingObject>();
 
-        // If it is, call the OnCaught method
         if (fallingObject != null)
         {
             fallingObject.OnCaught();
         }
-
     }
 }
