@@ -11,3 +11,11 @@ How to play:
 - Press D or Right Arrow = Move right
 - Catch green items = +10 points
 - Catch red items = -1 life
+
+How to open:
+
+- Open Unity Hub 
+- Add Project
+- Select the Scene(MiniGame)
+
+Github: https://github.com/NickTAM1/UnityA2.git
